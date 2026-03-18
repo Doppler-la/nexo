@@ -1,112 +1,50 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
-import { RefreshCw, CheckCircle2, AlertCircle } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { RefreshCw, CheckCircle2, AlertCircle, Clock } from "lucide-react"
+import { useSyncStatus, useTriggerSync } from "@/src/hooks/useSync"
 
-interface SyncResource {
-  name: string
-  status: "ok" | "error" | "pending"
-}
-
-interface SyncStatus {
-  lastSync: string | null
-  resources: SyncResource[]
+function StatusBadge({ status }: { status: "ok" | "error" | "pending" }) {
+  if (status === "ok") {
+    return (
+      <Badge variant="outline" className="gap-1 text-green-700 border-green-300 bg-green-50">
+        <CheckCircle2 className="h-3 w-3" />
+        OK
+      </Badge>
+    )
+  }
+  if (status === "error") {
+    return (
+      <Badge variant="outline" className="gap-1 text-destructive border-destructive/30 bg-destructive/10">
+        <AlertCircle className="h-3 w-3" />
+        Error
+      </Badge>
+    )
+  }
+  return (
+    <Badge variant="outline" className="gap-1 text-muted-foreground">
+      <Clock className="h-3 w-3" />
+      Pendiente
+    </Badge>
+  )
 }
 
 export function SyncPanel() {
-  const [status, setStatus] = useState<SyncStatus>({
-    lastSync: null,
-    resources: [
-      { name: "Productos", status: "pending" },
-      { name: "Listas de precios", status: "pending" },
-      { name: "Precios", status: "pending" },
-      { name: "Stock", status: "pending" },
-    ],
-  })
-  const [syncing, setSyncing] = useState(false)
-  const [message, setMessage] = useState("")
+  const { data: status, isLoading } = useSyncStatus()
+  const { mutate: triggerSync, isPending, isSuccess, isError, reset } = useTriggerSync()
 
-  useEffect(() => {
-    fetchSyncStatus()
-  }, [])
+  const resources = status?.resources ?? [
+    { name: "Productos",         status: "pending" as const },
+    { name: "Listas de precios", status: "pending" as const },
+    { name: "Precios",           status: "pending" as const },
+    { name: "Stock",             status: "pending" as const },
+  ]
 
-  const fetchSyncStatus = async () => {
-    try {
-      const middlewareUrl = process.env.NEXT_PUBLIC_MIDDLEWARE_URL
-      const apiKey = process.env.NEXT_PUBLIC_API_KEY
-
-      const res = await fetch(`${middlewareUrl}/api/sync/status`, {
-        headers: {
-          "X-API-Key": apiKey || "",
-        },
-      })
-
-      if (res.ok) {
-        const data = await res.json()
-        setStatus({
-          lastSync: data.lastSync || null,
-          resources: data.resources || status.resources,
-        })
-      }
-    } catch {
-      // Keep default status if fetch fails
-    }
-  }
-
-  const handleSync = async () => {
-    setSyncing(true)
-    setMessage("")
-
-    try {
-      const middlewareUrl = process.env.NEXT_PUBLIC_MIDDLEWARE_URL
-      const apiKey = process.env.NEXT_PUBLIC_API_KEY
-
-      const res = await fetch(`${middlewareUrl}/api/sync/trigger`, {
-        method: "POST",
-        headers: {
-          "X-API-Key": apiKey || "",
-        },
-      })
-
-      if (!res.ok) {
-        throw new Error("Error al iniciar sincronización")
-      }
-
-      setMessage("Sincronización iniciada. Los datos se actualizarán en unos minutos.")
-      
-      // Refresh status after a delay
-      setTimeout(fetchSyncStatus, 2000)
-    } catch {
-      setMessage("Error al iniciar la sincronización. Intentá nuevamente.")
-    } finally {
-      setSyncing(false)
-    }
-  }
-
-  const getStatusBadge = (resourceStatus: "ok" | "error" | "pending") => {
-    switch (resourceStatus) {
-      case "ok":
-        return (
-          <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-            OK
-          </Badge>
-        )
-      case "error":
-        return (
-          <Badge variant="destructive">
-            Error
-          </Badge>
-        )
-      default:
-        return (
-          <Badge variant="secondary">
-            Pendiente
-          </Badge>
-        )
-    }
+  const handleSync = () => {
+    reset()
+    triggerSync()
   }
 
   return (
@@ -117,19 +55,19 @@ export function SyncPanel() {
             <div>
               <p className="text-sm text-muted-foreground">Última sincronización</p>
               <p className="font-medium">
-                {status.lastSync || "—"}
+                {isLoading ? "Cargando..." : (status?.lastSync ?? "—")}
               </p>
             </div>
           </div>
 
           <div className="space-y-3">
-            {status.resources.map((resource) => (
+            {resources.map((resource) => (
               <div
                 key={resource.name}
                 className="flex items-center justify-between py-2 border-b last:border-0"
               >
                 <span className="text-sm">{resource.name}</span>
-                {getStatusBadge(resource.status)}
+                <StatusBadge status={resource.status} />
               </div>
             ))}
           </div>
@@ -138,11 +76,11 @@ export function SyncPanel() {
 
       <Button
         onClick={handleSync}
-        disabled={syncing}
+        disabled={isPending}
         className="w-full"
         size="lg"
       >
-        {syncing ? (
+        {isPending ? (
           <>
             <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
             Sincronizando...
@@ -155,20 +93,17 @@ export function SyncPanel() {
         )}
       </Button>
 
-      {message && (
-        <div
-          className={`flex items-center gap-2 p-4 rounded-lg text-sm ${
-            message.includes("Error")
-              ? "bg-destructive/10 text-destructive"
-              : "bg-green-50 text-green-700"
-          }`}
-        >
-          {message.includes("Error") ? (
-            <AlertCircle className="h-4 w-4" />
-          ) : (
-            <CheckCircle2 className="h-4 w-4" />
-          )}
-          {message}
+      {isSuccess && (
+        <div className="flex items-center gap-2 p-4 rounded-lg text-sm bg-green-50 text-green-700">
+          <CheckCircle2 className="h-4 w-4 shrink-0" />
+          Sincronización iniciada. Los datos se actualizarán en unos minutos.
+        </div>
+      )}
+
+      {isError && (
+        <div className="flex items-center gap-2 p-4 rounded-lg text-sm bg-destructive/10 text-destructive">
+          <AlertCircle className="h-4 w-4 shrink-0" />
+          Error al iniciar la sincronización. Intentá de nuevo.
         </div>
       )}
     </div>
