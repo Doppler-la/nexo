@@ -17,80 +17,34 @@ import { CheckCircle2, AlertCircle } from "lucide-react"
 interface LinkCustomerModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSuccess: (customer: LinkedCustomerResult) => void
-}
-
-interface LinkedCustomerResult {
-  wooUserId: number
-  tangoCode: string
-  priceList: string
-  seller: string
-  transport: string
-  paymentCondition: string
+  onLink: (payload: { wooUserId: number; tangoCode: string; }) => void;
+  isPending: boolean
+  isSuccess: boolean
+  error: Error | null
 }
 
 export function LinkCustomerModal({
   open,
   onOpenChange,
-  onSuccess,
+  isSuccess,
+  isPending,
+  error,
+  onLink
 }: LinkCustomerModalProps) {
   const [wooUserId, setWooUserId] = useState("")
   const [tangoCode, setTangoCode] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState<LinkedCustomerResult | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
-    setError("")
-    setSuccess(null)
-
-    try {
-      const middlewareUrl = process.env.NEXT_PUBLIC_MIDDLEWARE_URL
-      const apiKey = process.env.NEXT_PUBLIC_API_KEY
-
-      const res = await fetch(`${middlewareUrl}/api/customers/link`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": apiKey || "",
-        },
-        body: JSON.stringify({
-          wooUserId: parseInt(wooUserId),
-          tangoCode,
-        }),
-      })
-
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.message || "Error al vincular cliente")
-      }
-
-      const result: LinkedCustomerResult = {
-        wooUserId: parseInt(wooUserId),
-        tangoCode,
-        priceList: data.priceList || "Lista estándar",
-        seller: data.seller || "Vendedor 1",
-        transport: data.transport || "Transporte general",
-        paymentCondition: data.paymentCondition || "Contado",
-      }
-
-      setSuccess(result)
-      onSuccess(result)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al vincular cliente")
-    } finally {
-      setLoading(false)
-    }
+    onLink({
+      wooUserId: Number(wooUserId),
+      tangoCode
+    })
   }
 
   const handleClose = () => {
     setWooUserId("")
     setTangoCode("")
-    setError("")
-    setSuccess(null)
     onOpenChange(false)
   }
 
@@ -105,25 +59,11 @@ export function LinkCustomerModal({
           </DialogDescription>
         </DialogHeader>
 
-        {success ? (
+        {isSuccess ? (
           <div className="py-4">
             <div className="flex items-center gap-2 text-green-600 mb-4">
               <CheckCircle2 className="h-5 w-5" />
               <span className="font-medium">Cliente vinculado correctamente</span>
-            </div>
-            <div className="space-y-2 text-sm bg-muted p-4 rounded-lg">
-              <p>
-                <span className="text-muted-foreground">Lista de precios:</span>{" "}
-                {success.priceList}
-              </p>
-              <p>
-                <span className="text-muted-foreground">Vendedor:</span>{" "}
-                {success.seller}
-              </p>
-              <p>
-                <span className="text-muted-foreground">Transporte:</span>{" "}
-                {success.transport}
-              </p>
             </div>
             <DialogFooter className="mt-4">
               <Button onClick={handleClose}>Cerrar</Button>
@@ -157,7 +97,7 @@ export function LinkCustomerModal({
               {error && (
                 <div className="flex items-center gap-2 text-destructive text-sm">
                   <AlertCircle className="h-4 w-4" />
-                  {error}
+                  {error.message || "Error al vincular el cliente"}
                 </div>
               )}
             </div>
@@ -167,10 +107,10 @@ export function LinkCustomerModal({
               </Button>
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={isPending}
                 className="bg-accent hover:bg-accent/90"
               >
-                {loading ? "Vinculando..." : "Vincular"}
+                {isPending ? "Vinculando..." : "Vincular"}
               </Button>
             </DialogFooter>
           </form>

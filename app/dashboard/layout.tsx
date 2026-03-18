@@ -6,18 +6,18 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
 import { useAuthStore } from "@/src/store/authStore"
-import { useHydratedAuth } from "@/src/hooks/useHydratedAuth"
+import { useAppInit } from "@/src/hooks/useAppInit"
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const router = useRouter()
-  const { isAuthenticated } = useHydratedAuth()
+  const router          = useRouter()
+  const { initialized } = useAppInit()
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const company         = useAuthStore((s) => s.user?.nameSrl)
   const clearAuth       = useAuthStore((s) => s.clearAuth)
-  const [ready, setReady] = useState(false)
 
   const handleLogout = () => {
     clearAuth()
@@ -25,16 +25,16 @@ export default function DashboardLayout({
   }
 
   useEffect(() => {
-    setReady(true)
-  }, [])
-
-  useEffect(() => {
-    if (ready && !isAuthenticated) {
+    if (!initialized) return
+    if (!isAuthenticated) {
       router.replace('/login')
     }
-  }, [ready, isAuthenticated, router])
+  }, [initialized, isAuthenticated, router])
 
-  if (!ready) return null
+  // Mientras carga, no mostrar nada (evita flash de redirect)
+  if (!initialized) return null
+
+  // Ya inicializado pero no autenticado — esperar redirect
   if (!isAuthenticated) return null
 
   return (

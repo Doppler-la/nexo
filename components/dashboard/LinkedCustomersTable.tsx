@@ -8,21 +8,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-
-interface LinkedCustomer {
-  wooUserId: number
-  tangoCode: string
-  priceList: string
-  seller: string
-  transport: string
-  paymentCondition: string
-}
+import { Customer } from "@/src/types/customer.type"
+import { Trash2 } from "lucide-react"
+import { Button } from "../ui/button"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "../ui/alert-dialog"
+import { useState } from "react"
+import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog"
 
 interface LinkedCustomersTableProps {
-  customers: LinkedCustomer[]
+  customers: Customer[]
 }
 
 export function LinkedCustomersTable({ customers }: LinkedCustomersTableProps) {
+  const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null)
+
+  const handleConfirmDelete = () => {
+    // TODO: llamar al endpoint de eliminación cuando esté disponible
+    console.log('Eliminar cliente:', customerToDelete?.wooUserId)
+    setCustomerToDelete(null)
+  }
   if (customers.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -37,6 +41,7 @@ export function LinkedCustomersTable({ customers }: LinkedCustomersTableProps) {
   }
 
   return (
+    <>
     <Table>
       <TableHeader>
         <TableRow>
@@ -44,8 +49,8 @@ export function LinkedCustomersTable({ customers }: LinkedCustomersTableProps) {
           <TableHead>Código Tango</TableHead>
           <TableHead>Lista de precios</TableHead>
           <TableHead>Vendedor</TableHead>
-          <TableHead>Transporte</TableHead>
-          <TableHead>Condición de pago</TableHead>
+          <TableHead>ID Cliente Tango</TableHead>
+          <TableHead>Acciones</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -53,13 +58,53 @@ export function LinkedCustomersTable({ customers }: LinkedCustomersTableProps) {
           <TableRow key={`${customer.wooUserId}-${customer.tangoCode}`}>
             <TableCell className="font-medium">{customer.wooUserId}</TableCell>
             <TableCell>{customer.tangoCode}</TableCell>
-            <TableCell>{customer.priceList}</TableCell>
-            <TableCell>{customer.seller}</TableCell>
-            <TableCell>{customer.transport}</TableCell>
-            <TableCell>{customer.paymentCondition}</TableCell>
+            <TableCell>{customer.priceListNumber}</TableCell>
+            <TableCell>{customer.saleConditionCode ?? '-'}</TableCell>
+            <TableCell>{customer.tangoCustomerId}</TableCell>
+            <TableCell>
+              <Button 
+                onClick={() => setCustomerToDelete(customer)} 
+                variant="destructive" 
+                size="icon" 
+                className="cursor-pointer"
+              >
+                <Trash2 className="h-6 w-6" />
+              </Button>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
+    <AlertDialog
+        open={!!customerToDelete}
+        onOpenChange={(open) => { if (!open) setCustomerToDelete(null) }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminás este cliente?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Se va a desvincular el usuario de WooCommerce{' '}
+              <span className="font-medium text-foreground">
+                #{customerToDelete?.wooUserId}
+              </span>{' '}
+              del cliente Tango{' '}
+              <span className="font-medium text-foreground">
+                {customerToDelete?.tangoCode}
+              </span>
+              . Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

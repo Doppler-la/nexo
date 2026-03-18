@@ -8,22 +8,21 @@ import { Plus, Users, RefreshCw } from "lucide-react"
 import { LinkedCustomersTable } from "@/components/dashboard/LinkedCustomersTable"
 import { LinkCustomerModal } from "@/components/dashboard/LinkCustomerModal"
 import { SyncPanel } from "@/components/dashboard/SyncPanel"
-
-interface LinkedCustomer {
-  wooUserId: number
-  tangoCode: string
-  priceList: string
-  seller: string
-  transport: string
-  paymentCondition: string
-}
+import { useCustomers, useLinkCustomer } from "@/src/hooks/useCustomers"
 
 export default function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false)
-  const [customers, setCustomers] = useState<LinkedCustomer[]>([])
 
-  const handleCustomerLinked = (customer: LinkedCustomer) => {
-    setCustomers((prev) => [...prev, customer])
+  const { data: customers = [], isLoading, isError } = useCustomers()
+  const { mutateAsync: linkCustomer, isPending, error: linkError, isSuccess, reset } = useLinkCustomer()
+
+  const handleOpenModal = () => {
+    reset() // limpiar estado anterior del modal
+    setModalOpen(true)
+  }
+
+  const handleLink = (payload: { wooUserId: number; tangoCode: string }) => {
+    linkCustomer(payload)
   }
 
   return (
@@ -58,7 +57,7 @@ export default function DashboardPage() {
                   </CardDescription>
                 </div>
                 <Button
-                  onClick={() => setModalOpen(true)}
+                  onClick={handleOpenModal}
                   className="bg-accent hover:bg-accent/90"
                 >
                   <Plus className="mr-2 h-4 w-4" />
@@ -67,7 +66,19 @@ export default function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <LinkedCustomersTable customers={customers} />
+              {isLoading && (
+                <p className="text-sm text-muted-foreground py-4 text-center">
+                  Cargando clientes...
+                </p>
+              )}
+              {isError && (
+                <p className="text-sm text-destructive py-4 text-center">
+                  Error al cargar los clientes.
+                </p>
+              )}
+              {!isLoading && !isError && (
+                <LinkedCustomersTable customers={customers} />
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -91,7 +102,10 @@ export default function DashboardPage() {
       <LinkCustomerModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        onSuccess={handleCustomerLinked}
+        onLink={handleLink}
+        isPending={isPending}
+        isSuccess={isSuccess}
+        error={linkError}
       />
     </div>
   )
