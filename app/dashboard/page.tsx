@@ -31,7 +31,7 @@ export default function DashboardPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground">Panel de control</h1>
         <p className="text-muted-foreground mt-1">
-          Gestioná la sincronización entre Tango y WooCommerce
+          Gestioná la sincronización entre Tango y tu negocio
         </p>
       </div>
 

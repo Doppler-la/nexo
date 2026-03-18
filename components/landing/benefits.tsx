@@ -5,7 +5,7 @@ const benefits = [
   {
     icon: CheckCircle,
     title: "Cero carga manual",
-    description: "Los pedidos de WooCommerce se crean solos en Tango. Tu equipo se enfoca en vender, no en cargar datos.",
+    description: "Los pedidos de tu negocio se crean solos en Tango. Tu equipo se enfoca en vender, no en cargar datos.",
   },
   {
     icon: Users,
@@ -20,7 +20,7 @@ const benefits = [
   {
     icon: Zap,
     title: "Fácil de implementar",
-    description: "Sin plugins complejos ni desarrollos a medida. Nexo se integra con tu Tango y WooCommerce existentes.",
+    description: "Sin plugins complejos ni desarrollos a medida. Nexo se integra con tu Tango y tu negocio existentes.",
   },
 ]
 

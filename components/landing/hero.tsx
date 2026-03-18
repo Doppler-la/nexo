@@ -8,10 +8,10 @@ export function Hero() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="text-balance text-3xl font-bold tracking-tight text-primary sm:text-4xl md:text-5xl lg:text-6xl">
-            Conectá Tango con tu tienda WooCommerce, sin complicaciones
+            Conectá Tango con tu tienda, sin complicaciones
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg text-muted-foreground md:text-xl">
-            Nexo es el middleware que sincroniza tus productos, precios por cliente y pedidos entre Tango Gestión y WooCommerce — en tiempo real, sin intervención manual.
+            Nexo es el middleware que sincroniza tus productos, precios por cliente y pedidos entre Tango Gestión y tu tienda — en tiempo real, sin intervención manual.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" asChild>

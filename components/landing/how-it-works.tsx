@@ -12,7 +12,7 @@ const steps = [
   {
     number: "03",
     title: "Los pedidos llegan solos",
-    description: "Al confirmar una compra en WooCommerce, el pedido se crea automáticamente en Tango con todos los datos del cliente.",
+    description: "Al confirmar una compra en tu tienda, el pedido se crea automáticamente en Tango con todos los datos del cliente.",
   },
 ]
 

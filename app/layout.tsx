@@ -6,8 +6,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Nexo | Conectá Tango con WooCommerce',
-  description: 'Nexo es el middleware que sincroniza productos, precios por cliente y pedidos entre Tango Gestión y WooCommerce en tiempo real.',
+  title: 'Nexo | Conectá Tango con tu negocio',
+  description: 'Nexo es el middleware que sincroniza productos, precios por cliente y pedidos entre Tango Gestión y tu negocio en tiempo real.',
   generator: 'v0.app',
   icons: {
     icon: [
