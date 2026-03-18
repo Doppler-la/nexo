@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
+import { useAuthStore } from "@/src/store/authStore"
+import { useHydratedAuth } from "@/src/hooks/useHydratedAuth"
 
 export default function DashboardLayout({
   children,
@@ -12,31 +14,28 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const router = useRouter()
-  const [company, setCompany] = useState("")
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-    const token = localStorage.getItem("nexo_token")
-    const storedCompany = localStorage.getItem("nexo_company")
-
-    if (!token) {
-      router.push("/login")
-      return
-    }
-
-    setCompany(storedCompany || "Mi Empresa")
-  }, [router])
+  const { isAuthenticated } = useHydratedAuth()
+  const company         = useAuthStore((s) => s.user?.nameSrl)
+  const clearAuth       = useAuthStore((s) => s.clearAuth)
+  const [ready, setReady] = useState(false)
 
   const handleLogout = () => {
-    localStorage.removeItem("nexo_token")
-    localStorage.removeItem("nexo_company")
-    router.push("/login")
+    clearAuth()
+    router.replace('/login')
   }
 
-  if (!mounted) {
-    return null
-  }
+  useEffect(() => {
+    setReady(true)
+  }, [])
+
+  useEffect(() => {
+    if (ready && !isAuthenticated) {
+      router.replace('/login')
+    }
+  }, [ready, isAuthenticated, router])
+
+  if (!ready) return null
+  if (!isAuthenticated) return null
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -54,7 +53,7 @@ export default function DashboardLayout({
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="text-muted-foreground hover:text-foreground"
+              className="cursor-pointer"
             >
               <LogOut className="mr-2 h-4 w-4" />
               Cerrar sesión

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
+import { QueryProvider } from '@/src/providers/QueryProvider'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -34,9 +35,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es">
-      <body className={`${inter.className} antialiased`}>
-        {children}
+    <html suppressHydrationWarning>
+      <body className={`${inter.className} antialiased`} >
+        <QueryProvider>
+          {children}
+        </QueryProvider>
         <Analytics />
       </body>
     </html>
