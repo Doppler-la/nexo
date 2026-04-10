@@ -11,4 +11,9 @@ export const customersRepository = {
     const { data } = await httpClient.post('/api/customers/link', payload)
     return data
   },
+
+  unlink: async (wooUserId: number) => {
+    const { data } = await httpClient.delete(`/api/customers/${wooUserId}`)
+    return data
+  },
 }

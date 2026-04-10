@@ -22,3 +22,15 @@ export function useLinkCustomer() {
     },
   })
 }
+
+export function useUnlinkCustomer() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: customersRepository.unlink,
+    throwOnError: false,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY })
+    },
+  })
+}

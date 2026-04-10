@@ -14,6 +14,7 @@ import { Button } from "../ui/button"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from "../ui/alert-dialog"
 import { useState } from "react"
 import { AlertDialogFooter, AlertDialogHeader } from "../ui/alert-dialog"
+import { useUnlinkCustomer } from "@/src/hooks/useCustomers"
 
 interface LinkedCustomersTableProps {
   customers: Customer[]
@@ -21,11 +22,13 @@ interface LinkedCustomersTableProps {
 
 export function LinkedCustomersTable({ customers }: LinkedCustomersTableProps) {
   const [customerToDelete, setCustomerToDelete] = useState<Customer | null>(null)
+  const { mutate: unlinkCustomer, isPending } = useUnlinkCustomer()
 
   const handleConfirmDelete = () => {
-    // TODO: llamar al endpoint de eliminación cuando esté disponible
-    console.log('Eliminar cliente:', customerToDelete?.wooUserId)
-    setCustomerToDelete(null)
+    if (!customerToDelete) return
+    unlinkCustomer(customerToDelete.wooUserId, {
+      onSuccess: () => setCustomerToDelete(null),
+    })
   }
   if (customers.length === 0) {
     return (
@@ -98,9 +101,10 @@ export function LinkedCustomersTable({ customers }: LinkedCustomersTableProps) {
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmDelete}
+              disabled={isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Eliminar
+              {isPending ? 'Eliminando...' : 'Eliminar'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
