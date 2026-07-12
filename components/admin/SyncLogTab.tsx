@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useClientSyncLog } from '@/src/hooks/useClientDetail'
 import { PaginatedDataTable, PAGE_SIZE } from '@/components/admin/PaginatedDataTable'
 import { Badge } from '@/components/ui/badge'
@@ -9,10 +8,11 @@ import { formatDateTime } from '@/lib/formatDate'
 
 interface SyncLogTabProps {
   slug: string
+  page: number
+  onPageChange: (page: number) => void
 }
 
-export function SyncLogTab({ slug }: SyncLogTabProps) {
-  const [page, setPage] = useState(1)
+export function SyncLogTab({ slug, page, onPageChange }: SyncLogTabProps) {
   const { data, isLoading, isError } = useClientSyncLog(slug, {
     limit: PAGE_SIZE,
     offset: (page - 1) * PAGE_SIZE,
@@ -39,7 +39,7 @@ export function SyncLogTab({ slug }: SyncLogTabProps) {
       items={data?.items ?? []}
       total={data?.total ?? 0}
       page={page}
-      onPageChange={setPage}
+      onPageChange={onPageChange}
       isLoading={isLoading}
       isError={isError}
       emptyMessage="No hay corridas de sincronización para este cliente."

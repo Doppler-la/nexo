@@ -60,8 +60,8 @@ export function PaginatedDataTable<T>({
       <Table>
         <TableHeader>
           <TableRow>
-            {columns.map((column) => (
-              <TableHead key={column.header}>{column.header}</TableHead>
+            {columns.map((column, index) => (
+              <TableHead key={index}>{column.header}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -83,8 +83,8 @@ export function PaginatedDataTable<T>({
           {!isLoading &&
             items.map((item) => (
               <TableRow key={getRowKey(item)}>
-                {columns.map((column) => (
-                  <TableCell key={column.header}>{column.cell(item)}</TableCell>
+                {columns.map((column, index) => (
+                  <TableCell key={index}>{column.cell(item)}</TableCell>
                 ))}
               </TableRow>
             ))}

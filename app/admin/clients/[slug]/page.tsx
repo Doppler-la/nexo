@@ -1,6 +1,6 @@
 "use client"
 
-import { use } from "react"
+import { use, useState } from "react"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -19,6 +19,11 @@ export default function ClientDetailPage({ params }: { params: Promise<{ slug: s
   const { slug } = use(params)
   const { data: setup, isLoading, isError } = useAdminClient(slug)
   const { mutate: updateClient, isPending, error } = useUpdateClient(slug)
+  const [productsPage, setProductsPage] = useState(1)
+  const [stockPage, setStockPage] = useState(1)
+  const [customersPage, setCustomersPage] = useState(1)
+  const [ordersPage, setOrdersPage] = useState(1)
+  const [syncLogPage, setSyncLogPage] = useState(1)
 
   const handleSubmit = (payload: UpdateClientPayload) => {
     updateClient(payload)
@@ -71,19 +76,19 @@ export default function ClientDetailPage({ params }: { params: Promise<{ slug: s
           </TabsContent>
 
           <TabsContent value="products">
-            <ProductsTab slug={slug} />
+            <ProductsTab slug={slug} page={productsPage} onPageChange={setProductsPage} />
           </TabsContent>
           <TabsContent value="stock">
-            <StockTab slug={slug} />
+            <StockTab slug={slug} page={stockPage} onPageChange={setStockPage} />
           </TabsContent>
           <TabsContent value="customers">
-            <CustomersTab slug={slug} />
+            <CustomersTab slug={slug} page={customersPage} onPageChange={setCustomersPage} />
           </TabsContent>
           <TabsContent value="orders">
-            <OrdersTab slug={slug} />
+            <OrdersTab slug={slug} page={ordersPage} onPageChange={setOrdersPage} />
           </TabsContent>
           <TabsContent value="sync-log">
-            <SyncLogTab slug={slug} />
+            <SyncLogTab slug={slug} page={syncLogPage} onPageChange={setSyncLogPage} />
           </TabsContent>
         </Tabs>
       )}

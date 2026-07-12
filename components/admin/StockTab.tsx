@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useClientStock } from '@/src/hooks/useClientDetail'
 import { PaginatedDataTable, PAGE_SIZE } from '@/components/admin/PaginatedDataTable'
 import { StockItem } from '@/src/types/clientDetail.type'
@@ -8,10 +7,11 @@ import { formatDateTime } from '@/lib/formatDate'
 
 interface StockTabProps {
   slug: string
+  page: number
+  onPageChange: (page: number) => void
 }
 
-export function StockTab({ slug }: StockTabProps) {
-  const [page, setPage] = useState(1)
+export function StockTab({ slug, page, onPageChange }: StockTabProps) {
   const { data, isLoading, isError } = useClientStock(slug, {
     limit: PAGE_SIZE,
     offset: (page - 1) * PAGE_SIZE,
@@ -30,7 +30,7 @@ export function StockTab({ slug }: StockTabProps) {
       items={data?.items ?? []}
       total={data?.total ?? 0}
       page={page}
-      onPageChange={setPage}
+      onPageChange={onPageChange}
       isLoading={isLoading}
       isError={isError}
       emptyMessage="No hay stock cargado para este cliente."

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useClientProducts } from '@/src/hooks/useClientDetail'
 import { PaginatedDataTable, PAGE_SIZE } from '@/components/admin/PaginatedDataTable'
 import { ProductItem } from '@/src/types/clientDetail.type'
@@ -8,10 +7,11 @@ import { formatDateTime } from '@/lib/formatDate'
 
 interface ProductsTabProps {
   slug: string
+  page: number
+  onPageChange: (page: number) => void
 }
 
-export function ProductsTab({ slug }: ProductsTabProps) {
-  const [page, setPage] = useState(1)
+export function ProductsTab({ slug, page, onPageChange }: ProductsTabProps) {
   const { data, isLoading, isError } = useClientProducts(slug, {
     limit: PAGE_SIZE,
     offset: (page - 1) * PAGE_SIZE,
@@ -33,7 +33,7 @@ export function ProductsTab({ slug }: ProductsTabProps) {
       items={data?.items ?? []}
       total={data?.total ?? 0}
       page={page}
-      onPageChange={setPage}
+      onPageChange={onPageChange}
       isLoading={isLoading}
       isError={isError}
       emptyMessage="No hay productos para este cliente."

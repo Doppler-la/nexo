@@ -14,7 +14,7 @@ export type ProductItem = {
   barCode: string | null
   measureUnitCode: string | null
   salesMeasureUnitCode: string | null
-  salesEquivalence: string
+  salesEquivalence: string | null
   disabled: boolean
   isKit: boolean
   lastUpdated: string | null

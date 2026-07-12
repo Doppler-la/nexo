@@ -13,10 +13,11 @@ const ERROR_STATUSES: OrderStatus[] = ['error', 'rejected', 'observed']
 
 interface OrdersTabProps {
   slug: string
+  page: number
+  onPageChange: (page: number) => void
 }
 
-export function OrdersTab({ slug }: OrdersTabProps) {
-  const [page, setPage] = useState(1)
+export function OrdersTab({ slug, page, onPageChange }: OrdersTabProps) {
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null)
   const { data, isLoading, isError } = useClientOrders(slug, {
     limit: PAGE_SIZE,
@@ -53,7 +54,7 @@ export function OrdersTab({ slug }: OrdersTabProps) {
         items={data?.items ?? []}
         total={data?.total ?? 0}
         page={page}
-        onPageChange={setPage}
+        onPageChange={onPageChange}
         isLoading={isLoading}
         isError={isError}
         emptyMessage="No hay pedidos para este cliente."
