@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -8,7 +8,7 @@ import { LogOut } from "lucide-react"
 import { useAuthStore } from "@/src/store/authStore"
 import { useAppInit } from "@/src/hooks/useAppInit"
 
-export default function DashboardLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode
@@ -16,9 +16,8 @@ export default function DashboardLayout({
   const router          = useRouter()
   const { initialized } = useAppInit()
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
-  const role            = useAuthStore((s) => s.user?.role)
-  const company         = useAuthStore((s) => s.user?.nameSrl)
-  const clearAuth       = useAuthStore((s) => s.clearAuth)
+  const role             = useAuthStore((s) => s.user?.role)
+  const clearAuth        = useAuthStore((s) => s.clearAuth)
 
   const handleLogout = () => {
     clearAuth()
@@ -31,29 +30,26 @@ export default function DashboardLayout({
       router.replace('/login')
       return
     }
-    if (role === 'admin') {
-      router.replace('/admin')
+    if (role !== 'admin') {
+      router.replace('/dashboard')
     }
   }, [initialized, isAuthenticated, role, router])
 
   // Mientras carga, no mostrar nada (evita flash de redirect)
   if (!initialized) return null
 
-  // Ya inicializado pero no autenticado, o es admin — esperar redirect
-  if (!isAuthenticated || role === 'admin') return null
+  // No autenticado, o autenticado pero no admin — esperar redirect
+  if (!isAuthenticated || role !== 'admin') return null
 
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 border-b bg-background">
         <div className="flex h-16 items-center justify-between px-4 md:px-6">
-          <Link href="/dashboard" className="text-xl font-bold text-primary">
-            Nexo
+          <Link href="/admin" className="text-xl font-bold text-primary">
+            Nexo <span className="text-sm font-normal text-muted-foreground">/ Administrador</span>
           </Link>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground hidden sm:inline">
-              {company}
-            </span>
             <Button
               variant="ghost"
               size="sm"

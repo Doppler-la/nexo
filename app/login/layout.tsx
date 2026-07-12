@@ -10,12 +10,11 @@ export default function LoginLayout({
 }: { children: React.ReactNode }) {
     const router = useRouter()
     
-    const { isAuthenticated } = useAuthStore()
-    console.log('LoginLayout render - isAuthenticated:', isAuthenticated)
+    const { isAuthenticated, user } = useAuthStore()
     useEffect(() => {
         if (isAuthenticated) {
-          router.replace('/dashboard')
+          router.replace(user?.role === 'admin' ? '/admin' : '/dashboard')
         }
-      }, [isAuthenticated, router])
+      }, [isAuthenticated, user, router])
     return children;
 }

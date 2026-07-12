@@ -12,7 +12,7 @@ export function useLogin() {
     mutationFn: authRepository.login,
     onSuccess: (data) => {
       setAuth(data.user, data.token)
-      router.push('/dashboard')
+      router.push(data.user.role === 'admin' ? '/admin' : '/dashboard')
     },
   })
 }
