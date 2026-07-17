@@ -9,6 +9,7 @@ import { SecretField } from "./SecretField"
 
 interface ClientCreatedPanelProps {
   setup: ClientWithSetup
+  userCredentials?: { email: string; password: string }
 }
 
 function CopyButton({ value }: { value: string }) {
@@ -28,9 +29,29 @@ function CopyButton({ value }: { value: string }) {
   )
 }
 
-export function ClientCreatedPanel({ setup }: ClientCreatedPanelProps) {
+export function ClientCreatedPanel({ setup, userCredentials }: ClientCreatedPanelProps) {
   return (
     <div className="space-y-6">
+      {userCredentials && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Acceso al dashboard del cliente</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-2">
+              <p className="text-sm text-muted-foreground">Email</p>
+              <div className="flex items-center gap-2">
+                <code className="flex-1 truncate rounded-md bg-muted px-3 py-2 text-sm">
+                  {userCredentials.email}
+                </code>
+                <CopyButton value={userCredentials.email} />
+              </div>
+            </div>
+            <SecretField label="Contraseña" value={userCredentials.password} />
+          </CardContent>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Snippet para functions.php</CardTitle>

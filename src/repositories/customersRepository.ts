@@ -2,8 +2,8 @@ import { httpClient } from '@/lib/httpClient'
 import { CustomersResponse } from '../types/customer.type';
 
 export const customersRepository = {
-  getAll: async () => {
-    const { data } = await httpClient.get<CustomersResponse>('/api/customers')
+  getMine: async () => {
+    const { data } = await httpClient.get<CustomersResponse>('/api/customers/mine')
     return data.customers
   },
 

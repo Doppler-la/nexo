@@ -28,6 +28,8 @@ const REFERENCE_FIELDS = [
 export function ClientForm({ mode, initialValues, onSubmit, isPending, error }: ClientFormProps) {
   const [slug, setSlug] = useState(initialValues?.slug ?? "")
   const [name, setName] = useState(initialValues?.name ?? "")
+  const [userEmail, setUserEmail] = useState("")
+  const [userPassword, setUserPassword] = useState("")
   const [active, setActive] = useState(initialValues?.active ?? true)
   const [tangoAccessToken, setTangoAccessToken] = useState(mode === "create" ? (initialValues?.tangoAccessToken ?? "") : "")
   const [tangoApiUrl, setTangoApiUrl] = useState(initialValues?.tangoApiUrl ?? "")
@@ -47,6 +49,8 @@ export function ClientForm({ mode, initialValues, onSubmit, isPending, error }: 
       onSubmit({
         slug,
         name,
+        userEmail,
+        userPassword,
         tangoAccessToken,
         tangoApiUrl: tangoApiUrl || undefined,
         notes: notes || null,
@@ -95,6 +99,34 @@ export function ClientForm({ mode, initialValues, onSubmit, isPending, error }: 
         <div className="flex items-center gap-3">
           <Switch id="active" checked={active} onCheckedChange={setActive} />
           <Label htmlFor="active">Cliente activo</Label>
+        </div>
+      )}
+
+      {mode === "create" && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-2">
+            <Label htmlFor="userEmail">Email del usuario del dashboard</Label>
+            <Input
+              id="userEmail"
+              type="email"
+              value={userEmail}
+              onChange={(e) => setUserEmail(e.target.value)}
+              placeholder="cliente@empresa.com"
+              required
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="userPassword">Contraseña del usuario del dashboard</Label>
+            <Input
+              id="userPassword"
+              type="text"
+              value={userPassword}
+              onChange={(e) => setUserPassword(e.target.value)}
+              placeholder="Mínimo 8 caracteres"
+              minLength={8}
+              required
+            />
+          </div>
         </div>
       )}
 

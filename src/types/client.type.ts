@@ -31,6 +31,8 @@ export interface ClientsResponse {
 export interface CreateClientPayload {
   slug: string
   name: string
+  userEmail: string
+  userPassword: string
   tangoAccessToken: string
   tangoApiUrl?: string
   depositoId?: string | null

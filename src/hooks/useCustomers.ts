@@ -6,7 +6,7 @@ const QUERY_KEY = ['customers']
 export function useCustomers() {
   return useQuery({
     queryKey: QUERY_KEY,
-    queryFn: customersRepository.getAll,
+    queryFn: customersRepository.getMine,
   })
 }
 

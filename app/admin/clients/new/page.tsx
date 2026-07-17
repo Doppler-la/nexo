@@ -6,13 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ArrowLeft, CheckCircle2 } from "lucide-react"
 import { ClientForm } from "@/components/admin/ClientForm"
 import { ClientCreatedPanel } from "@/components/admin/ClientCreatedPanel"
+import { useState } from "react"
 import { useCreateClient } from "@/src/hooks/useAdminClients"
 import { CreateClientPayload } from "@/src/types/client.type"
 
 export default function NewClientPage() {
   const { mutate: createClient, isPending, error, data } = useCreateClient()
+  const [userCredentials, setUserCredentials] = useState({ email: "", password: "" })
 
   const handleSubmit = (payload: CreateClientPayload) => {
+    setUserCredentials({ email: payload.userEmail, password: payload.userPassword })
     createClient(payload)
   }
 
@@ -37,7 +40,7 @@ export default function NewClientPage() {
               </CardDescription>
             </CardHeader>
           </Card>
-          <ClientCreatedPanel setup={data} />
+          <ClientCreatedPanel setup={data} userCredentials={userCredentials} />
           <Button asChild variant="outline">
             <Link href={`/admin/clients/${data.client.slug}`}>Ir al detalle del cliente</Link>
           </Button>
