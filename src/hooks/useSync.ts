@@ -50,7 +50,7 @@ export function useSyncStatus() {
 export function useTriggerSync() {
   const queryClient = useQueryClient()
 
-  return useMutation({
+  return useMutation<void, Error>({
     mutationFn:   syncRepository.trigger,
     throwOnError: false,
     onSuccess: () => {

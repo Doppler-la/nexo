@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { RefreshCw, CheckCircle2, AlertCircle, Clock } from "lucide-react"
 import { useSyncStatus, useTriggerSync } from "@/src/hooks/useSync"
+import { SyncInProgressError } from "@/src/repositories/syncRepository"
 
 function StatusBadge({ status }: { status: "ok" | "error" | "pending" }) {
   if (status === "ok") {
@@ -33,7 +34,7 @@ function StatusBadge({ status }: { status: "ok" | "error" | "pending" }) {
 
 export function SyncPanel() {
   const { data: status, isLoading } = useSyncStatus()
-  const { mutate: triggerSync, isPending, isSuccess, isError, reset } = useTriggerSync()
+  const { mutate: triggerSync, isPending, isSuccess, isError, error, reset } = useTriggerSync()
 
   const resources = status?.resources ?? [
     { name: "Productos",         status: "pending" as const },
@@ -103,7 +104,9 @@ export function SyncPanel() {
       {isError && (
         <div className="flex items-center gap-2 p-4 rounded-lg text-sm bg-destructive/10 text-destructive">
           <AlertCircle className="h-4 w-4 shrink-0" />
-          Error al iniciar la sincronización. Intentá de nuevo.
+          {error instanceof SyncInProgressError
+            ? error.message
+            : 'Error al iniciar la sincronización. Intentá de nuevo.'}
         </div>
       )}
     </div>
