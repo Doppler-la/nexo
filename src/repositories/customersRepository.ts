@@ -8,7 +8,7 @@ export const customersRepository = {
   },
 
   link: async (payload: { wooUserId: number; tangoCode: string }) => {
-    const { data } = await httpClient.post('/api/customers/link', payload)
+    const { data } = await httpClient.post('/api/customers/mine', payload)
     return data
   },
 
