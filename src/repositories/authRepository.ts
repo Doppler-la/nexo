@@ -5,6 +5,12 @@ export interface LoginPayload {
   password: string
 }
 
+export interface AuthClient {
+  slug: string
+  name: string
+  b2bEnabled: boolean
+}
+
 export interface LoginResponse {
   token: string
   user: {
@@ -14,6 +20,7 @@ export interface LoginResponse {
     nameSrl: string | null
     role: 'admin' | 'client'
   }
+  client: AuthClient | null
 }
 
 export interface MeResponse {
@@ -22,6 +29,7 @@ export interface MeResponse {
   name: string
   nameSrl: string | null
   role: 'admin' | 'client'
+  client: AuthClient | null
 }
 
 export const authRepository = {

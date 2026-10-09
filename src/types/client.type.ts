@@ -13,6 +13,8 @@ export interface Client {
   transportCodeDefault: string | null
   shippingSku: string | null
   notes: string | null
+  b2bEnabled: boolean
+  wpUrl: string | null
   createdAt: string
 }
 
@@ -41,6 +43,8 @@ export interface CreateClientPayload {
   transportCodeDefault?: string | null
   shippingSku?: string | null
   notes?: string | null
+  b2bEnabled?: boolean
+  wpUrl?: string | null
 }
 
 export type UpdateClientPayload = Partial<Omit<CreateClientPayload, 'slug'>> & {

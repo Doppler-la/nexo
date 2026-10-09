@@ -7,12 +7,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, Users, RefreshCw } from "lucide-react"
 import { LinkedCustomersTable } from "@/components/dashboard/LinkedCustomersTable"
 import { LinkCustomerModal } from "@/components/dashboard/LinkCustomerModal"
+import { B2bUsersPanel } from "@/components/b2b/B2bUsersPanel"
+import { useMe } from "@/src/hooks/useAuth"
 import { SyncPanel } from "@/components/dashboard/SyncPanel"
 import { useCustomers, useLinkCustomer } from "@/src/hooks/useCustomers"
 
 export default function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false)
 
+  const b2bEnabled = useMe().data?.client?.b2bEnabled === true
   const { data: customers = [], isLoading, isError } = useCustomers()
   const { mutateAsync: linkCustomer, isPending, error: linkError, isSuccess, reset } = useLinkCustomer()
 
@@ -40,6 +43,12 @@ export default function DashboardPage() {
             <Users className="h-4 w-4" />
             Clientes vinculados
           </TabsTrigger>
+          {b2bEnabled && (
+            <TabsTrigger value="b2b" className="gap-2">
+              <Users className="h-4 w-4" />
+              Usuarios B2B
+            </TabsTrigger>
+          )}
           <TabsTrigger value="sync" className="gap-2">
             <RefreshCw className="h-4 w-4" />
             Sincronización
@@ -82,6 +91,22 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {b2bEnabled && (
+          <TabsContent value="b2b">
+            <Card>
+              <CardHeader>
+                <CardTitle>Usuarios del portal B2B</CardTitle>
+                <CardDescription>
+                  Aprobá o rechazá solicitudes, creá usuarios y reseteá contraseñas.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <B2bUsersPanel />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
 
         <TabsContent value="sync">
           <Card>

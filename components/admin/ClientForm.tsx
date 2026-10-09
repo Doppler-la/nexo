@@ -33,6 +33,8 @@ export function ClientForm({ mode, initialValues, onSubmit, isPending, error }: 
   const [active, setActive] = useState(initialValues?.active ?? true)
   const [tangoAccessToken, setTangoAccessToken] = useState(mode === "create" ? (initialValues?.tangoAccessToken ?? "") : "")
   const [tangoApiUrl, setTangoApiUrl] = useState(initialValues?.tangoApiUrl ?? "")
+  const [b2bEnabled, setB2bEnabled] = useState(initialValues?.b2bEnabled ?? false)
+  const [wpUrl, setWpUrl] = useState(initialValues?.wpUrl ?? "")
   const [notes, setNotes] = useState(initialValues?.notes ?? "")
   const [references, setReferences] = useState<Record<string, string>>(
     Object.fromEntries(REFERENCE_FIELDS.map((f) => [f.key, initialValues?.[f.key] ?? ""]))
@@ -54,6 +56,8 @@ export function ClientForm({ mode, initialValues, onSubmit, isPending, error }: 
         tangoAccessToken,
         tangoApiUrl: tangoApiUrl || undefined,
         notes: notes || null,
+        b2bEnabled,
+        wpUrl: wpUrl || null,
         ...referencePayload,
       })
     } else {
@@ -63,6 +67,8 @@ export function ClientForm({ mode, initialValues, onSubmit, isPending, error }: 
         ...(tangoAccessToken ? { tangoAccessToken } : {}),
         tangoApiUrl: tangoApiUrl || undefined,
         notes: notes || null,
+        b2bEnabled,
+        wpUrl: wpUrl || null,
         ...referencePayload,
       })
     }
@@ -165,6 +171,24 @@ export function ClientForm({ mode, initialValues, onSubmit, isPending, error }: 
             />
           </div>
         ))}
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="flex items-center gap-3">
+          <Switch id="b2bEnabled" checked={b2bEnabled} onCheckedChange={setB2bEnabled} />
+          <Label htmlFor="b2bEnabled">Portal B2B habilitado</Label>
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="wpUrl">URL de WordPress (usuarios históricos)</Label>
+          <Input
+            id="wpUrl"
+            value={wpUrl}
+            onChange={(e) => setWpUrl(e.target.value)}
+            placeholder="https://imagineone.com.ar"
+            pattern="https://.*[^/]"
+            title="Debe empezar con https:// y no terminar en barra"
+          />
+        </div>
       </div>
 
       <div className="grid gap-2">

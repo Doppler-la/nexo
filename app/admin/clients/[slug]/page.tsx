@@ -11,6 +11,7 @@ import { ProductsTab } from "@/components/admin/ProductsTab"
 import { StockTab } from "@/components/admin/StockTab"
 import { CustomersTab } from "@/components/admin/CustomersTab"
 import { OrdersTab } from "@/components/admin/OrdersTab"
+import { B2bUsersPanel } from "@/components/b2b/B2bUsersPanel"
 import { SyncLogTab } from "@/components/admin/SyncLogTab"
 import { useAdminClient, useUpdateClient } from "@/src/hooks/useAdminClients"
 import { UpdateClientPayload } from "@/src/types/client.type"
@@ -47,6 +48,7 @@ export default function ClientDetailPage({ params }: { params: Promise<{ slug: s
             <TabsTrigger value="stock">Stock</TabsTrigger>
             <TabsTrigger value="customers">Customers</TabsTrigger>
             <TabsTrigger value="orders">Pedidos</TabsTrigger>
+            {setup.client.b2bEnabled && <TabsTrigger value="b2b">Usuarios B2B</TabsTrigger>}
             <TabsTrigger value="sync-log">Sync log</TabsTrigger>
           </TabsList>
 
@@ -87,6 +89,11 @@ export default function ClientDetailPage({ params }: { params: Promise<{ slug: s
           <TabsContent value="orders">
             <OrdersTab slug={slug} page={ordersPage} onPageChange={setOrdersPage} />
           </TabsContent>
+          {setup.client.b2bEnabled && (
+            <TabsContent value="b2b">
+              <B2bUsersPanel clientId={setup.client.id} />
+            </TabsContent>
+          )}
           <TabsContent value="sync-log">
             <SyncLogTab slug={slug} page={syncLogPage} onPageChange={setSyncLogPage} />
           </TabsContent>
