@@ -34,3 +34,13 @@ export function useUnlinkCustomer() {
     },
   })
 }
+
+export function useRefreshCustomers() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: customersRepository.refresh,
+    throwOnError: false,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+  })
+}

@@ -12,6 +12,11 @@ export const customersRepository = {
     return data
   },
 
+  refresh: async () => {
+    const { data } = await httpClient.post<{ total: number; changed: number; failed: { tangoCode: string; message: string }[] }>('/api/customers/mine/refresh')
+    return data
+  },
+
   unlink: async (wooUserId: number) => {
     const { data } = await httpClient.delete(`/api/customers/${wooUserId}`)
     return data
