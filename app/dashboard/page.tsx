@@ -7,10 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, Users, RefreshCw } from "lucide-react"
 import { LinkedCustomersTable } from "@/components/dashboard/LinkedCustomersTable"
 import { LinkCustomerModal } from "@/components/dashboard/LinkCustomerModal"
+import { RefreshCustomersButton } from "@/components/dashboard/RefreshCustomersButton"
 import { B2bUsersPanel } from "@/components/b2b/B2bUsersPanel"
 import { useMe } from "@/src/hooks/useAuth"
 import { SyncPanel } from "@/components/dashboard/SyncPanel"
-import { useCustomers, useLinkCustomer, useRefreshCustomers } from "@/src/hooks/useCustomers"
+import { useCustomers, useLinkCustomer } from "@/src/hooks/useCustomers"
 
 export default function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false)
@@ -18,8 +19,6 @@ export default function DashboardPage() {
   const b2bEnabled = useMe().data?.client?.b2bEnabled === true
   const { data: customers = [], isLoading, isError } = useCustomers()
   const { mutateAsync: linkCustomer, isPending, error: linkError, isSuccess, reset } = useLinkCustomer()
-
-  const { mutate: refresh, isPending: isRefreshing, data: refreshResult, isError: refreshError } = useRefreshCustomers()
 
   const handleOpenModal = () => {
     reset() // limpiar estado anterior del modal
@@ -68,10 +67,7 @@ export default function DashboardPage() {
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => refresh()} disabled={isRefreshing}>
-                    <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-                    {isRefreshing ? "Actualizando..." : "Actualizar desde Tango"}
-                  </Button>
+                  <RefreshCustomersButton />
                   <Button
                     onClick={handleOpenModal}
                     className="bg-accent hover:bg-accent/90"
@@ -81,16 +77,6 @@ export default function DashboardPage() {
                   </Button>
                 </div>
               </div>
-              {refreshError && (
-                <p className="text-sm text-destructive mt-2">No se pudo actualizar desde Tango.</p>
-              )}
-              {refreshResult && (
-                <p className="text-sm text-muted-foreground mt-2">
-                  {refreshResult.changed} de {refreshResult.total} cambiaron de lista de precios
-                  {refreshResult.failed.length > 0 &&
-                    `. Fallaron ${refreshResult.failed.length}: ${refreshResult.failed.map((f) => f.tangoCode).join(", ")}`}
-                </p>
-              )}
             </CardHeader>
             <CardContent>
               {isLoading && (

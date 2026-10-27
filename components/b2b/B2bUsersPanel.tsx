@@ -15,6 +15,7 @@ import {
   useResetB2bPassword, useUpdateB2bUser,
 } from "@/src/hooks/useB2bUsers"
 import { B2bStatus, B2bUser } from "@/src/types/b2bUser.type"
+import { RefreshCustomersButton } from "@/components/dashboard/RefreshCustomersButton"
 import { formatDateTime } from "@/lib/formatDate"
 
 type Action =
@@ -44,10 +45,13 @@ export function B2bUsersPanel({ clientId }: { clientId?: number }) {
             <TabsTrigger value="rejected">Rechazados</TabsTrigger>
           </TabsList>
         </Tabs>
-        <Button onClick={() => setAction({ type: "create" })} className="bg-accent hover:bg-accent/90">
-          <Plus className="mr-2 h-4 w-4" />
-          Crear usuario
-        </Button>
+        <div className="flex items-start gap-2">
+          <RefreshCustomersButton clientId={clientId} />
+          <Button onClick={() => setAction({ type: "create" })} className="bg-accent hover:bg-accent/90">
+            <Plus className="mr-2 h-4 w-4" />
+            Crear usuario
+          </Button>
+        </div>
       </div>
 
       {isLoading && <p className="text-sm text-muted-foreground py-4 text-center">Cargando usuarios...</p>}
