@@ -8,6 +8,7 @@ export interface B2bUser {
   name: string
   razonSocial: string | null
   cuit: string | null
+  nombreOptica: string | null
   phone: string | null
   tangoCode: string | null
   status: B2bStatus
@@ -25,9 +26,10 @@ export interface CreateB2bUserPayload {
   tangoCode: string
   razonSocial?: string
   cuit?: string
+  nombreOptica?: string
   phone?: string
 }
 
 export type UpdateB2bUserPayload = Partial<
-  Pick<CreateB2bUserPayload, 'name' | 'razonSocial' | 'cuit' | 'phone' | 'tangoCode'>
+  Pick<CreateB2bUserPayload, 'name' | 'razonSocial' | 'cuit' | 'nombreOptica' | 'phone' | 'tangoCode'>
 >

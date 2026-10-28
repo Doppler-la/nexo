@@ -66,6 +66,7 @@ export function B2bUsersPanel({ clientId }: { clientId?: number }) {
               <TableHead>Nombre</TableHead>
               <TableHead>Email</TableHead>
               <TableHead>Razón social</TableHead>
+              <TableHead>Óptica</TableHead>
               <TableHead>CUIT</TableHead>
               <TableHead>Cód. Tango</TableHead>
               <TableHead>{status === "rejected" ? "Motivo" : "Alta"}</TableHead>
@@ -78,6 +79,7 @@ export function B2bUsersPanel({ clientId }: { clientId?: number }) {
                 <TableCell>{u.name}</TableCell>
                 <TableCell>{u.email}</TableCell>
                 <TableCell>{u.razonSocial ?? "—"}</TableCell>
+                <TableCell>{u.nombreOptica ?? "—"}</TableCell>
                 <TableCell>{u.cuit ?? "—"}</TableCell>
                 <TableCell>{u.tangoCode || "—"}</TableCell>
                 <TableCell>{status === "rejected" ? u.rejectReason ?? "—" : formatDateTime(u.createdAt)}</TableCell>
@@ -130,7 +132,7 @@ function ActionDialog({ action, clientId, onClose }: { action: Action | null; cl
   const user = action && "user" in action ? action.user : undefined
   const [f, setF] = useState({
     email: "", password: "", reason: "",
-    name: user?.name ?? "", razonSocial: user?.razonSocial ?? "", cuit: user?.cuit ?? "",
+    name: user?.name ?? "", razonSocial: user?.razonSocial ?? "", cuit: user?.cuit ?? "", nombreOptica: user?.nombreOptica ?? "",
     phone: user?.phone ?? "", tangoCode: user?.tangoCode ?? "",
   })
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -148,12 +150,12 @@ function ActionDialog({ action, clientId, onClose }: { action: Action | null; cl
     if (action.type === "reset") reset.mutate({ id: action.user.id, password: f.password }, done)
     if (action.type === "edit")
       update.mutate({ id: action.user.id, payload: {
-        name: f.name, razonSocial: f.razonSocial, cuit: f.cuit, phone: f.phone, tangoCode: f.tangoCode,
+        name: f.name, razonSocial: f.razonSocial, nombreOptica: f.nombreOptica, cuit: f.cuit, phone: f.phone, tangoCode: f.tangoCode,
       } }, done)
     if (action.type === "create")
       create.mutate({
         email: f.email, password: f.password, name: f.name, tangoCode: f.tangoCode,
-        razonSocial: opt(f.razonSocial), cuit: opt(f.cuit), phone: opt(f.phone),
+        razonSocial: opt(f.razonSocial), nombreOptica: opt(f.nombreOptica), cuit: opt(f.cuit), phone: opt(f.phone),
       }, done)
   }
 
@@ -188,7 +190,7 @@ function ActionDialog({ action, clientId, onClose }: { action: Action | null; cl
             {(action.type === "approve" || action.type === "reject") && (
               <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 rounded-md border p-3 text-sm">
                 {([["Nombre", action.user.name], ["Email", action.user.email],
-                   ["Razón social", action.user.razonSocial], ["CUIT", action.user.cuit]] as const).map(([k, v]) => (
+                   ["Razón social", action.user.razonSocial], ["Óptica", action.user.nombreOptica], ["CUIT", action.user.cuit]] as const).map(([k, v]) => (
                   <div key={k} className="contents">
                     <dt className="text-muted-foreground">{k}</dt>
                     <dd className="font-medium break-words">{v || "—"}</dd>
@@ -208,6 +210,7 @@ function ActionDialog({ action, clientId, onClose }: { action: Action | null; cl
               <>
                 {field("name", "Nombre", { required: true })}
                 {field("razonSocial", "Razón social")}
+                {field("nombreOptica", "Nombre de la óptica")}
                 {field("cuit", "CUIT")}
                 {field("phone", "Teléfono")}
                 {field("tangoCode", "Código de cliente en Tango", { required: action.type === "create" })}
